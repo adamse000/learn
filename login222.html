@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Login System</title>
+    <style>
+        :root {
+  --primary: #58bc82;
+  --primary-dark: #40855d;
+  --secondary: #6e8efb;
+  --accent: #a777e3;
+  --dark: #2c3e50;
+  --light: #f8f9fa;
+  --glass: rgba(255, 255, 255, 0.9);
+}
+        body {
+            font-family: Arial, sans-serif;
+            background: url(top-view-pens-pencils-with-copy-space.jpg) no-repeat center;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.055);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 5px 8px rgba(58, 58, 58, 0.6);
+            width: 300px;
+            text-align: center;
+            backdrop-filter: blur(7px);
+        }
+        h2 {
+            margin-bottom: 1.5rem;
+            color: #333;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        h2:hover {
+            color: #58bc82;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px solid #646464;
+            border-radius: 15px;
+            box-sizing: border-box;
+            background-color: #ffffffa1;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+        input:focus {
+            border-color: #58bc82;
+            outline: none;
+            border: 2px solid #58bc82;
+        }
+        input::placeholder {
+            color: #333;
+        }
+        .error {
+            color: red;
+            margin: 10px 0;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .success {
+            color: #58bc82;
+            margin: 10px 0;
+        }
+        .hidden {
+            display: none;
+        }
+        p {
+            margin-top: 25px;
+            color: #333;
+        }
+        .register-link, .login-link {
+            color: #40855d;
+            font-weight: bold;
+        }
+        button {
+            width: 80%;
+            padding: 10px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+            margin-top: 30px;
+            box-shadow: 0 4px 15px rgba(88, 188, 130, 0.3);
+            display: inline-block;
+        }
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(88, 188, 130, 0.4);
+            color: white;
+        }
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 15px rgba(88, 188, 130, 0.3);
+            opacity: 0.8;
+        }
+
+
+        .profile-pic {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 15px;
+            border: 3px solid #58bc82;
+            display: block;
+        }
+        .profile-info {
+            text-align: left;
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+        .profile-info p {
+            margin: 8px 0;
+            color: #333;
+        }
+        .profile-info strong {
+            color: #58bc82;
+        }
+        .file-input-label {
+            display: inline-block;
+            padding: 8px 15px;
+            background-color: #58bc82;
+            color: white;
+            border-radius: 15px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .file-input-label:hover {
+            background-color: #40855d;
+        }
+        #profilePicInput {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="loginContainer">
+        <h2>Login</h2>
+        <div id="errorMessage" class="error"></div>
+        <input type="text" id="username" placeholder="Username" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <button onclick="login()"><strong>Login</strong></button>
+        <p>Don't have an account? <a href="#" onclick="showRegister()" class="register-link">Register</a></p>
+    </div>
+
+    <div class="container hidden" id="registerContainer">
+        <h2>Register</h2>
+        <div id="regErrorMessage" class="error"></div>
+        <div id="regSuccessMessage" class="success"></div>
+        <input type="text" id="regUsername" placeholder="Username" required>
+        <input type="text" id="regName" placeholder="Full Name" required>
+        <input type="email" id="regEmail" placeholder="Email" required>
+        <input type="password" id="regPassword" placeholder="Password" required>
+        <input type="password" id="regConfirmPassword" placeholder="Confirm Password" required>
+        <label for="regProfilePic" class="file-input-label">Choose Profile Picture</label>
+        <input type="file" id="regProfilePic" accept="image/*" class="hidden">
+
+        <button onclick="register()">Register</button>
+        <p>Already have an account? <a href="#" onclick="showLogin()" class="login-link">Login</a></p>
+    </div>
+
+    <div class="container hidden" id="welcomeContainer">
+        <img id="userProfilePic" src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Profile" class="profile-pic">
+        <label for="profilePicInput" class="file-input-label">Change Picture</label>
+        <input type="file" id="profilePicInput" accept="image/*">
+        
+        <h2>Welcome, <span id="displayUsername"></span>!</h2>
+        
+        <div class="profile-info">
+            <p><strong>Name:</strong> <span id="displayName"></span></p>
+            <p><strong>Email:</strong> <span id="displayEmail"></span></p>
+            <p><strong>Member since:</strong> <span id="displayJoinDate"></span></p>
+        </div>
+        
+        <a href="website333.html"><button>Go to Dashboard</button></a>
+        <button onclick="logout()">Logout</button>
+    </div>
+
+    <script>
+        // Initialize users storage if it doesn't exist
+        if (!localStorage.getItem('users')) {
+            localStorage.setItem('users', JSON.stringify({}));
+        }
+
+        // Check if user is already logged in
+        if (localStorage.getItem('loggedInUser')) {
+            const username = localStorage.getItem('loggedInUser');
+            const users = JSON.parse(localStorage.getItem('users'));
+            if (users[username]) {
+                showWelcome(username);
+            } else {
+                localStorage.removeItem('loggedInUser');
+            }
+        }
+
+        function showRegister() {
+            document.getElementById('loginContainer').classList.add('hidden');
+            document.getElementById('registerContainer').classList.remove('hidden');
+            document.getElementById('welcomeContainer').classList.add('hidden');
+            clearMessages();
+        }
+
+        function showLogin() {
+            document.getElementById('loginContainer').classList.remove('hidden');
+            document.getElementById('registerContainer').classList.add('hidden');
+            document.getElementById('welcomeContainer').classList.add('hidden');
+            clearMessages();
+        }
+
+        function showWelcome(username) {
+            const users = JSON.parse(localStorage.getItem('users'));
+            const user = users[username];
+            
+            document.getElementById('loginContainer').classList.add('hidden');
+            document.getElementById('registerContainer').classList.add('hidden');
+            document.getElementById('welcomeContainer').classList.remove('hidden');
+            
+            // Display user information
+            document.getElementById('displayUsername').textContent = username;
+            document.getElementById('displayName').textContent = user.name || 'Not provided';
+            document.getElementById('displayEmail').textContent = user.email || 'Not provided';
+            document.getElementById('displayJoinDate').textContent = user.joinDate || new Date().toLocaleDateString();
+            
+            // Display profile picture if available
+            if (user.profilePic) {
+                document.getElementById('userProfilePic').src = user.profilePic;
+            } else {
+                document.getElementById('userProfilePic').src = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png";
+            }
+        }
+
+        function clearMessages() {
+            document.getElementById('errorMessage').textContent = '';
+            document.getElementById('regErrorMessage').textContent = '';
+            document.getElementById('regSuccessMessage').textContent = '';
+        }
+
+        function login() {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const errorElement = document.getElementById('errorMessage');
+
+            errorElement.textContent = ''; // Clear previous error messages
+
+            if (!username || !password) {
+                errorElement.textContent = 'Please fill in all fields';
+                return;
+            }
+
+            const users = JSON.parse(localStorage.getItem('users')) || {};
+
+            if (!users[username]) {
+                errorElement.textContent = 'Username not found';
+                return;
+            }
+
+            if (users[username].password !== password) {
+                errorElement.textContent = 'Incorrect password';
+                return;
+            }
+
+            // Successful login
+            localStorage.setItem('loggedInUser', username);
+            window.location.href = 'website333.html'; // Redirect to website333.html
+        }
+
+        function register() {
+            const username = document.getElementById('regUsername').value;
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('regConfirmPassword').value;
+            const profilePicInput = document.getElementById('regProfilePic');
+            const errorElement = document.getElementById('regErrorMessage');
+            const successElement = document.getElementById('regSuccessMessage');
+            
+            errorElement.textContent = '';
+            successElement.textContent = '';
+            
+            if (!username || !name || !email || !password || !confirmPassword) {
+                errorElement.textContent = 'Please fill in all fields';
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                errorElement.textContent = 'Passwords do not match';
+                return;
+            }
+            
+            if (password.length < 8) {
+                errorElement.textContent = 'Password must be at least 8 characters';
+                return;
+            }
+            
+            if (!validateEmail(email)) {
+                errorElement.textContent = 'Please enter a valid email address';
+                return;
+            }
+            
+            const users = JSON.parse(localStorage.getItem('users'));
+            
+            if (users[username]) {
+                errorElement.textContent = 'Username already exists';
+                return;
+            }
+            
+            // Create new user object with additional info
+            const newUser = {
+                password: password,
+                name: name,
+                email: email,
+                joinDate: new Date().toLocaleDateString(),
+                profilePic: null
+            };
+            
+            // Handle profile picture upload if available
+            if (profilePicInput.files && profilePicInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    newUser.profilePic = e.target.result;
+                    users[username] = newUser;
+                    localStorage.setItem('users', JSON.stringify(users));
+                    completeRegistration();
+                };
+                reader.readAsDataURL(profilePicInput.files[0]);
+            } else {
+                users[username] = newUser;
+                localStorage.setItem('users', JSON.stringify(users));
+                completeRegistration();
+            }
+        }
+        
+        function completeRegistration() {
+            document.getElementById('regSuccessMessage').textContent = 'Registration successful! Please login.';
+            // Clear form
+            document.getElementById('regUsername').value = '';
+            document.getElementById('regName').value = '';
+            document.getElementById('regEmail').value = '';
+            document.getElementById('regPassword').value = '';
+            document.getElementById('regConfirmPassword').value = '';
+            document.getElementById('regProfilePic').value = '';
+            
+            // Auto switch to login after 2 seconds
+            setTimeout(showLogin, 2000);
+        }
+        
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+
+        function logout() {
+            localStorage.removeItem('loggedInUser');
+            showLogin();
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        }
+        
+        // Handle profile picture change after login
+        document.getElementById('profilePicInput').addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                const username = localStorage.getItem('loggedInUser');
+                if (!username) return;
+                
+                const users = JSON.parse(localStorage.getItem('users'));
+                if (!users[username]) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    users[username].profilePic = event.target.result;
+                    localStorage.setItem('users', JSON.stringify(users));
+                    document.getElementById('userProfilePic').src = event.target.result;
+                };
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+    </script>
+    <script>
+        // Initialize users storage with backup
+        function initializeStorage() {
+            if (!localStorage.getItem('users')) {
+                localStorage.setItem('users', JSON.stringify({}));
+                localStorage.setItem('users_backup1', JSON.stringify({}));
+                localStorage.setItem('users_backup2', JSON.stringify({}));
+            }
+        }
+    
+        // Check and restore from backup if needed
+        function checkAndRestoreUsers() {
+            let users = JSON.parse(localStorage.getItem('users'));
+            let backup1 = JSON.parse(localStorage.getItem('users_backup1'));
+            let backup2 = JSON.parse(localStorage.getItem('users_backup2'));
+            
+            // If main storage is empty but backups exist, restore
+            if (Object.keys(users).length === 0 && 
+                (Object.keys(backup1).length > 0 || Object.keys(backup2).length > 0)) {
+                users = Object.assign({}, backup1, backup2);
+                localStorage.setItem('users', JSON.stringify(users));
+            }
+            
+            return users;
+        }
+    
+        // Save users with backup
+        function saveUsers(users) {
+            localStorage.setItem('users', JSON.stringify(users));
+            localStorage.setItem('users_backup1', JSON.stringify(users));
+            localStorage.setItem('users_backup2', JSON.stringify(users));
+        }
+    
+        // On page load
+        initializeStorage();
+        let users = checkAndRestoreUsers();
+    
+        // Check if user is already logged in
+        if (localStorage.getItem('loggedInUser')) {
+            const username = localStorage.getItem('loggedInUser');
+            if (users[username]) {
+                showWelcome(username);
+            } else {
+                localStorage.removeItem('loggedInUser');
+            }
+        }
+    
+        // Modify all functions that save users to use saveUsers() instead:
+        function register() {
+            // ... existing code until user creation ...
+            
+            users[username] = newUser;
+            saveUsers(users);
+            
+            // ... rest of the function ...
+        }
+    
+        // Update profile picture handler
+        document.getElementById('profilePicInput').addEventListener('change', function(e) {
+            // ... existing code ...
+            
+            users[username].profilePic = event.target.result;
+            saveUsers(users);
+            
+            // ... rest of the function ...
+        });
+    </script>
+    <script>
+        // IndexedDB implementation
+        const DB_NAME = 'UserDatabase';
+        const DB_VERSION = 1;
+        const STORE_NAME = 'users';
+        
+        let db;
+        
+        // Initialize the database
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+                
+                request.onerror = (event) => {
+                    console.error('Database error:', event.target.error);
+                    reject('Database error');
+                };
+                
+                request.onsuccess = (event) => {
+                    db = event.target.result;
+                    resolve(db);
+                };
+                
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    if (!db.objectStoreNames.contains(STORE_NAME)) {
+                        db.createObjectStore(STORE_NAME, { keyPath: 'username' });
+                    }
+                };
+            });
+        }
+        
+        // Get a user by username
+        function getUser(username) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([STORE_NAME], 'readonly');
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.get(username);
+                
+                request.onerror = (event) => {
+                    reject('Error getting user');
+                };
+                
+                request.onsuccess = (event) => {
+                    resolve(event.target.result);
+                };
+            });
+        }
+        
+        // Save a user
+        function saveUser(user) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([STORE_NAME], 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.put(user);
+                
+                request.onerror = (event) => {
+                    reject('Error saving user');
+                };
+                
+                request.onsuccess = (event) => {
+                    resolve();
+                };
+            });
+        }
+        
+        // Delete a user
+        function deleteUser(username) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([STORE_NAME], 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.delete(username);
+                
+                request.onerror = (event) => {
+                    reject('Error deleting user');
+                };
+                
+                request.onsuccess = (event) => {
+                    resolve();
+                };
+            });
+        }
+        
+        // Initialize database when page loads
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                await initDB();
+                
+                // Check if user is logged in
+                const loggedInUser = localStorage.getItem('loggedInUser');
+                if (loggedInUser) {
+                    const user = await getUser(loggedInUser);
+                    if (user) {
+                        showWelcome(user.username);
+                    } else {
+                        localStorage.removeItem('loggedInUser');
+                    }
+                }
+            } catch (error) {
+                console.error('Initialization error:', error);
+            }
+        });
+        
+        // Modified login function
+        async function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorElement = document.getElementById('errorMessage');
+            
+            errorElement.textContent = '';
+            
+            if (!username || !password) {
+                errorElement.textContent = 'Please fill in all fields';
+                return;
+            }
+            
+            try {
+                const user = await getUser(username);
+                
+                if (!user) {
+                    errorElement.textContent = 'Username not found';
+                    return;
+                }
+                
+                if (user.password !== password) {
+                    errorElement.textContent = 'Incorrect password';
+                    return;
+                }
+                
+                // Successful login
+                localStorage.setItem('loggedInUser', username);
+                showWelcome(username);
+            } catch (error) {
+                errorElement.textContent = 'Login error. Please try again.';
+                console.error(error);
+            }
+        }
+        
+        // Modified register function
+        async function register() {
+            const username = document.getElementById('regUsername').value;
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('regConfirmPassword').value;
+            const profilePicInput = document.getElementById('regProfilePic');
+            const errorElement = document.getElementById('regErrorMessage');
+            const successElement = document.getElementById('regSuccessMessage');
+            
+            errorElement.textContent = '';
+            successElement.textContent = '';
+            
+            if (!username || !name || !email || !password || !confirmPassword) {
+                errorElement.textContent = 'Please fill in all fields';
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                errorElement.textContent = 'Passwords do not match';
+                return;
+            }
+            
+            if (password.length < 8) {
+                errorElement.textContent = 'Password must be at least 8 characters';
+                return;
+            }
+            
+            if (!validateEmail(email)) {
+                errorElement.textContent = 'Please enter a valid email address';
+                return;
+            }
+            
+            try {
+                const existingUser = await getUser(username);
+                if (existingUser) {
+                    errorElement.textContent = 'Username already exists';
+                    return;
+                }
+                
+                // Create new user object
+                const newUser = {
+                    username: username,
+                    password: password,
+                    name: name,
+                    email: email,
+                    joinDate: new Date().toLocaleDateString(),
+                    profilePic: null
+                };
+                
+                // Handle profile picture upload if available
+                if (profilePicInput.files && profilePicInput.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        newUser.profilePic = e.target.result;
+                        saveUser(newUser).then(() => {
+                            completeRegistration();
+                        }).catch(error => {
+                            errorElement.textContent = 'Registration error. Please try again.';
+                            console.error(error);
+                        });
+                    };
+                    reader.readAsDataURL(profilePicInput.files[0]);
+                } else {
+                    await saveUser(newUser);
+                    completeRegistration();
+                }
+            } catch (error) {
+                errorElement.textContent = 'Registration error. Please try again.';
+                console.error(error);
+            }
+        }
+        
+        // Modified profile picture change handler
+        document.getElementById('profilePicInput').addEventListener('change', async function(e) {
+            if (e.target.files && e.target.files[0]) {
+                const username = localStorage.getItem('loggedInUser');
+                if (!username) return;
+                
+                try {
+                    const user = await getUser(username);
+                    if (!user) return;
+                    
+                    const reader = new FileReader();
+                    reader.onload = async function(event) {
+                        user.profilePic = event.target.result;
+                        try {
+                            await saveUser(user);
+                            document.getElementById('userProfilePic').src = event.target.result;
+                        } catch (error) {
+                            console.error('Error updating profile picture:', error);
+                        }
+                    };
+                    reader.readAsDataURL(e.target.files[0]);
+                } catch (error) {
+                    console.error('Error updating profile picture:', error);
+                }
+            }
+        });
+        if (navigator.storage && navigator.storage.persist) {
+    navigator.storage.persist().then(granted => {
+        if (granted) {
+            console.log("Storage will not be cleared except by explicit user action");
+        } else {
+            console.log("Storage may be cleared by the UA under storage pressure.");
+        }
+    });
+}
+        </script>
+    <script>
+    // ...existing code...
+
+    // Backup accounts to a secondary storage key
+    function backupAccounts() {
+        const users = localStorage.getItem('users');
+        if (users) {
+            localStorage.setItem('users_backup', users);
+        }
+    }
+
+    // Restore accounts from the backup if they are missing
+    function restoreAccounts() {
+        const users = localStorage.getItem('users');
+        const backup = localStorage.getItem('users_backup');
+        if (!users && backup) {
+            localStorage.setItem('users', backup);
+        }
+    }
+
+    // Call restoreAccounts on page load
+    document.addEventListener('DOMContentLoaded', restoreAccounts);
+
+    // Save backups every 60 seconds
+    setInterval(backupAccounts, 60000);
+</script>
+</body>
+</html>
